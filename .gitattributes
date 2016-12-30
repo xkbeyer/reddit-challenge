@@ -1,0 +1,5 @@
+﻿
+* text=auto
+
+*.jar	binary
+*.in    eol=lf

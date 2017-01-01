@@ -49,14 +49,11 @@
   (let [len (count srcvec)
         va (drop (- len n) srcvec)
         vb (take n (drop (- len (* n 2)) srcvec))]
-    (if (<= (- len n) 0)
+    (if (or (<= (- len n) 0) (>= n (/ len 2)))
       ()
       (let [result (vec-vec va vb)]
         (if (empty? result)
-          (if (>= n (/ len 2))
-            ( )
-            (islast-eq srcvec (inc n))
-          )
+          (islast-eq srcvec (inc n))
           result
           )
         )

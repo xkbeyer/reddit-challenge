@@ -8,3 +8,7 @@
 # others
 tt
 *.html
+scratch*
+
+# vscode
+**/.vscode

@@ -13,50 +13,64 @@ class CableColor(str, Enum):
     Green = "green"
     Orange = "orange"
 
-class State:
-    def white(self, cable):
+class Boom(Exception):
+    def __init__(self):
+        super(Boom, self).__init__("Boom")
+
+class Defusing:
+    def __init__(self, wiring_harness):
+        self.cable = wiring_harness
+    def white(self):
         not_allowed = [CableColor.White, CableColor.Black]
-        if cable[0] in not_allowed:
-            cable.clear()
+        if self.cable[0] in not_allowed:
+            raise Boom()
+        self.next()
         return
-    def black(self, cable):
+    def black(self):
         not_allowed = [CableColor.White, CableColor.Green, CableColor.Orange]
-        if cable[0] in not_allowed:
-            cable.clear()
+        if self.cable[0] in not_allowed:
+            raise Boom()
+        self.next()
         return
-    def red(self, cable):
-        if cable[0] != CableColor.Green:
-            cable.clear()
+    def red(self):
+        if self.cable[0] != CableColor.Green:
+            raise Boom()
+        self.next()
         return
-    def orange(self, cable):
+    def orange(self):
         must_do = [CableColor.Red, CableColor.Black]
-        if cable[0] not in must_do:
-            cable.clear()
+        if self.cable[0] not in must_do:
+            raise Boom()
+        self.next()
         return
-    def green(self, cable):
+    def green(self):
         must_do = [CableColor.White, CableColor.Orange]
-        if cable[0] not in must_do:
-            cable.clear()
+        if self.cable[0] not in must_do:
+            raise Boom()
+        self.next()
         return
-    def purple(self, cable):
+    def purple(self):
         not_allowed = [CableColor.Purple, CableColor.Green, CableColor.Orange, CableColor.White]
-        if cable[0] in not_allowed:
-            cable.clear()
+        if self.cable[0] in not_allowed:
+            raise Boom()
+        self.next()
         return
+    def next(self):
+        cut_cable = getattr(self, self.cable[0])
+        del self.cable[0]
+        if len(self.cable) == 0:
+            print('Allrigth the bomb is defused.')
+            return
+        cut_cable()
 
 def main():
     with open(sys.argv[1], 'r') as file:
-        lines = file.readlines()
-        lines = list(map(lambda s: s.strip(), lines))
-        solver = State()
-        while len(lines):
-            cut_cable = getattr(solver, lines[0])
-            del lines[0]
-            if len(lines) == 0:
-                print('Allrigth the bomb is defused.')
-                return
-            cut_cable(lines)
-        print('Boom!')
+        try:
+            lines = list(map(lambda s: s.strip(), file.readlines()))
+            solver = Defusing(lines)
+            solver.next()
+        except Boom as ex:
+            print(ex)
         return
 
 if __name__ == '__main__':
